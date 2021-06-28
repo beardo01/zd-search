@@ -8,8 +8,8 @@ public class SearchType {
     private final String name;
     private final List<String> fields;
 
-    public SearchType(String name, AbstractEntity entity) {
-        this.name = name;
+    public SearchType(AbstractEntity entity) {
+        this.name = entity.getEntityType().toString();
         this.fields = new ArrayList<>(entity.getData().keySet());
     }
 

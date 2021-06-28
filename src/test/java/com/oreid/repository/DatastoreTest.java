@@ -23,12 +23,14 @@ class DatastoreTest {
     private static final AbstractEntity ENTITY_1 = createAbstractEntity(ENTITY_TYPE_1, JSON_STRING);
     private static final AbstractEntity ENTITY_2 = createAbstractEntity(ENTITY_TYPE_1, JSON_STRING_2);
     private static final AbstractEntity ENTITY_3 = createAbstractEntity(ENTITY_TYPE_2, JSON_STRING);
+    private static final AbstractEntity ENTITY_4 = createAbstractEntity(ENTITY_TYPE_1, JSON_STRING_BLANK_VALUE);
     private static final List<Object> ENTITY_VALUES_1 = List.of("Oliver", "true", "New Zealand", "Australia", "24");
     private static final List<Object> ENTITY_VALUES_2 = List.of("John", "false", "New Zealand", "USA", "24");
     private static final String SEARCH_KEY = "name";
     private static final String SEARCH_VALUE = "Oliver";
     private static final String MULTIPLE_SEARCH_KEY = "age";
     private static final String MULTIPLE_SEARCH_VALUE = "24";
+    private static final String BLANK_VALUE = "";
 
     @InjectMocks
     private Datastore testee;
@@ -222,5 +224,15 @@ class DatastoreTest {
         final var result = testee.search(ENTITY_TYPE_1, SEARCH_KEY, SEARCH_VALUE);
 
         assertThat(result, is(Collections.emptyList()));
+    }
+
+    @Test
+    void test_search_found_blankValue() {
+        testee.addEntity(ENTITY_4);
+
+        final var result = testee.search(ENTITY_TYPE_1, SEARCH_KEY, BLANK_VALUE);
+
+        assertThat(result, hasSize(1));
+        assertThat(result, contains(ENTITY_4));
     }
 }

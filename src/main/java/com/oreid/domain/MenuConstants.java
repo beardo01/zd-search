@@ -2,7 +2,7 @@ package com.oreid.domain;
 
 public class MenuConstants {
 
-    public static final String MAIN_MENU = "Welcome to Zendesk Search\n" +
+    public static final String MAIN_MENU = "\n\nWelcome to Zendesk Search\n" +
             "\tSelect search options:\n\t" +
             "* Enter '1' to search\n\t" +
             "* Enter '2' to view search fields\n\t" +

@@ -10,22 +10,34 @@ import static com.oreid.domain.MenuConstants.*;
 public class MenuService {
 
     private final SearchService searchService;
+    private final Scanner scanner;
 
     public MenuService(SearchService searchService) {
         this.searchService = searchService;
+        this.scanner = new Scanner(System.in);
     }
 
     public void printMenu() {
         System.out.print(MAIN_MENU);
     }
 
-    public void processMenuInput(String input) {
+    public void processInput() {
+        while(true) {
+            processMenuInput(scanner.nextLine());
+        }
+    }
+
+    @VisibleForTesting
+    void processMenuInput(String input) {
+
         switch(input) {
             case SEARCH_OPTION:
                 processSearchSelect();
+                this.printMenu();
                 break;
             case FIELDS_OPTION:
                 searchService.printSearchTypes();
+                this.printMenu();
                 break;
             case QUIT_OPTION:
                 System.out.print(QUIT_MESSAGE);
@@ -36,21 +48,20 @@ public class MenuService {
     }
 
     private void processSearchSelect() {
-        Scanner input = new Scanner(System.in);
-        EntityType entityType = getEntityType(input);
-        String key = getSearchTerm(input, entityType);
-        String value = getSearchValue(input);
+        EntityType entityType = getEntityType();
+        String key = getSearchTerm(entityType);
+        String value = getSearchValue();
 
         this.searchService.printSearchResults(entityType, key, value);
     }
 
     @VisibleForTesting
-    EntityType getEntityType(Scanner input) {
+    EntityType getEntityType() {
         EntityType entityType = null;
 
         do {
             System.out.print(SELECT_ENTITY_MESSAGE);
-            String entityString = input.nextLine();
+            String entityString = scanner.nextLine();
 
             switch(entityString) {
                 case USER_OPTION:
@@ -70,12 +81,12 @@ public class MenuService {
         return entityType;
     }
 
-    private String getSearchTerm(Scanner input, EntityType entityType) {
+    private String getSearchTerm(EntityType entityType) {
         String field = null;
 
         do {
             System.out.print(SEARCH_TERM_MESSAGE);
-            String fieldInput = input.nextLine();
+            String fieldInput = scanner.nextLine();
 
             if(this.searchService.isValidField(entityType, fieldInput)) {
                 field = fieldInput;
@@ -87,9 +98,9 @@ public class MenuService {
         return field;
     }
 
-    private String getSearchValue(Scanner input) {
+    private String getSearchValue() {
         System.out.print(SEARCH_VALUE_MESSAGE);
-        return input.nextLine();
+        return scanner.nextLine();
     }
 
 }

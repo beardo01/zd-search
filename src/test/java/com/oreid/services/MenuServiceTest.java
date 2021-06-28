@@ -13,8 +13,6 @@ import uk.org.webcompere.systemstubs.security.SystemExit;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.util.Arrays;
-import java.util.Scanner;
 
 import static com.oreid.TestFixtures.sumStringLengths;
 import static com.oreid.domain.MenuConstants.*;
@@ -64,6 +62,9 @@ class MenuServiceTest {
     @Test
     void test_processMenuInput_searchOption_validOptions() throws Exception {
         withTextFromSystemIn(ORGANIZATION_OPTION, SEARCH_TERM, SEARCH_VALUE).execute(() -> {
+            // Reconstruct testee so that Scanner is mocked
+            testee = new MenuService(searchService);
+
             when(searchService.isValidField(ENTITY_TYPE, SEARCH_TERM)).thenReturn(true);
 
             testee.processMenuInput(SEARCH_OPTION);
@@ -71,10 +72,12 @@ class MenuServiceTest {
             assertThat(outContent.toString().contains(SELECT_ENTITY_MESSAGE), is(true));
             assertThat(outContent.toString().contains(SEARCH_TERM_MESSAGE), is(true));
             assertThat(outContent.toString().contains(SEARCH_VALUE_MESSAGE), is(true));
+            assertThat(outContent.toString().contains(MAIN_MENU), is(true));
             assertThat(outContent.toString().length(), is(sumStringLengths(
                             SELECT_ENTITY_MESSAGE,
                             SEARCH_TERM_MESSAGE,
-                            SEARCH_VALUE_MESSAGE
+                            SEARCH_VALUE_MESSAGE,
+                            MAIN_MENU
                     )));
             verify(searchService, times(1)).isValidField(ENTITY_TYPE, SEARCH_TERM);
             verify(searchService, times(1)).printSearchResults(
@@ -88,6 +91,9 @@ class MenuServiceTest {
     @Test
     void test_processMenuInput_searchOption_invalidThenValidType() throws Exception {
         withTextFromSystemIn(INVALID_INPUT, ORGANIZATION_OPTION, SEARCH_TERM, SEARCH_VALUE).execute(() -> {
+            // Reconstruct testee so that Scanner is mocked
+            testee = new MenuService(searchService);
+
             when(searchService.isValidField(ENTITY_TYPE, SEARCH_TERM)).thenReturn(true);
 
             testee.processMenuInput(SEARCH_OPTION);
@@ -96,12 +102,14 @@ class MenuServiceTest {
             assertThat(outContent.toString().contains(SELECT_ENTITY_MESSAGE), is(true));
             assertThat(outContent.toString().contains(SEARCH_TERM_MESSAGE), is(true));
             assertThat(outContent.toString().contains(SEARCH_VALUE_MESSAGE), is(true));
+            assertThat(outContent.toString().contains(MAIN_MENU), is(true));
             assertThat(outContent.toString().length(), is(sumStringLengths(
                     SELECT_ENTITY_MESSAGE,
                     INVALID_INPUT_MESSAGE,
                     SELECT_ENTITY_MESSAGE,
                     SEARCH_TERM_MESSAGE,
-                    SEARCH_VALUE_MESSAGE
+                    SEARCH_VALUE_MESSAGE,
+                    MAIN_MENU
             )));
             verify(searchService, times(1)).isValidField(ENTITY_TYPE, SEARCH_TERM);
             verify(searchService, times(1)).printSearchResults(
@@ -115,6 +123,9 @@ class MenuServiceTest {
     @Test
     void test_processMenuInput_searchOption_invalidThenValidTerm() throws Exception {
         withTextFromSystemIn(ORGANIZATION_OPTION, INVALID_INPUT, SEARCH_TERM, SEARCH_VALUE).execute(() -> {
+            // Reconstruct testee so that Scanner is mocked
+            testee = new MenuService(searchService);
+
             when(searchService.isValidField(ENTITY_TYPE, INVALID_INPUT)).thenReturn(false);
             when(searchService.isValidField(ENTITY_TYPE, SEARCH_TERM)).thenReturn(true);
 
@@ -124,12 +135,14 @@ class MenuServiceTest {
             assertThat(outContent.toString().contains(SELECT_ENTITY_MESSAGE), is(true));
             assertThat(outContent.toString().contains(SEARCH_TERM_MESSAGE), is(true));
             assertThat(outContent.toString().contains(SEARCH_VALUE_MESSAGE), is(true));
+            assertThat(outContent.toString().contains(MAIN_MENU), is(true));
             assertThat(outContent.toString().length(), is(sumStringLengths(
                     SELECT_ENTITY_MESSAGE,
                     SEARCH_TERM_MESSAGE,
                     INVALID_INPUT_MESSAGE,
                     SEARCH_TERM_MESSAGE,
-                    SEARCH_VALUE_MESSAGE
+                    SEARCH_VALUE_MESSAGE,
+                    MAIN_MENU
             )));
             verify(searchService, times(1)).isValidField(ENTITY_TYPE, INVALID_INPUT);
             verify(searchService, times(1)).isValidField(ENTITY_TYPE, SEARCH_TERM);
@@ -169,7 +182,10 @@ class MenuServiceTest {
     @Test
     void test_getEntityType_user() throws Exception {
         withTextFromSystemIn(USER_OPTION).execute(() -> {
-            final var result = testee.getEntityType(new Scanner(System.in));
+            // Reconstruct testee so that Scanner is mocked
+            testee = new MenuService(searchService);
+
+            final var result = testee.getEntityType();
 
             assertThat(result, is(EntityType.USER));
             assertThat(outContent.toString().contains(SELECT_ENTITY_MESSAGE), is(true));
@@ -180,7 +196,10 @@ class MenuServiceTest {
     @Test
     void test_getEntityType_ticket() throws Exception {
         withTextFromSystemIn(TICKET_OPTION).execute(() -> {
-            final var result = testee.getEntityType(new Scanner(System.in));
+            // Reconstruct testee so that Scanner is mocked
+            testee = new MenuService(searchService);
+
+            final var result = testee.getEntityType();
 
             assertThat(result, is(EntityType.TICKET));
             assertThat(outContent.toString().contains(SELECT_ENTITY_MESSAGE), is(true));
@@ -191,7 +210,10 @@ class MenuServiceTest {
     @Test
     void test_getEntityType_organization() throws Exception {
         withTextFromSystemIn(ORGANIZATION_OPTION).execute(() -> {
-            final var result = testee.getEntityType(new Scanner(System.in));
+            // Reconstruct testee so that Scanner is mocked
+            testee = new MenuService(searchService);
+
+            final var result = testee.getEntityType();
 
             assertThat(result, is(EntityType.ORGANIZATION));
             assertThat(outContent.toString().contains(SELECT_ENTITY_MESSAGE), is(true));

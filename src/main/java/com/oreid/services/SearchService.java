@@ -18,23 +18,24 @@ import static com.oreid.domain.SearchConstants.*;
 public class SearchService {
 
     private final EntityDatastore datastore;
-    private final Map<EntityType, SearchType> searchTypes;
+    private final Map<String, SearchType> searchTypes;
 
     public SearchService(EntityDatastore datastore) {
         this.datastore = datastore;
         this.searchTypes = new HashMap<>();
     }
 
-    public Map<EntityType, SearchType> getSearchTypes() {
+    public Map<String, SearchType> getSearchTypes() {
         return searchTypes;
     }
 
-    public void addSearchType(EntityType entityType, SearchType searchType) {
-        this.searchTypes.put(entityType, searchType);
+    public void addSearchType(SearchType searchType) {
+        this.searchTypes.put(searchType.getName(), searchType);
     }
 
     public boolean isValidField(EntityType entityType, String fieldName) {
-        return searchTypes.containsKey(entityType) && searchTypes.get(entityType).isValidField(fieldName);
+        String entityTypeString = entityType.toString();
+        return searchTypes.containsKey(entityTypeString) && searchTypes.get(entityTypeString).isValidField(fieldName);
     }
 
     public void addEntity(AbstractEntity entity) {
@@ -42,20 +43,26 @@ public class SearchService {
     }
 
     public void printSearchResults(EntityType entityType, String key, String value) {
-        List<List<String[]>> matchDescriptions = this.datastore.search(entityType, key, value).stream()
-                .map(this::getDescription)
-                .collect(Collectors.toList());
+        List<AbstractEntity> matches = this.datastore.search(entityType, key, value);
 
-        matchDescriptions.forEach(description -> {
-            System.out.print(PRINT_SEPARATOR);
-            description.forEach(matchLine -> System.out.format(ENTITY_DESCRIPTION_FORMAT, matchLine));
-        });
+        if(matches.isEmpty()) {
+            System.out.print(NO_RESULTS);
+        }
+
+        // Map to description and print
+        matches.stream()
+                .map(this::getDescription)
+                .forEach(description -> {
+                    System.out.print(PRINT_SEPARATOR);
+                    description.forEach(matchLine -> System.out.format(ENTITY_DESCRIPTION_FORMAT, matchLine));
+                });
     }
 
     public void printSearchTypes() {
         this.searchTypes.values().forEach(searchType -> {
-            System.out.print(PRINT_SEPARATOR);
+            System.out.format(ENTITY_FIELDS_LABEL, searchType.getName());
             searchType.getFields().forEach(System.out::println);
+            System.out.print(PRINT_SEPARATOR);
         });
     }
 
@@ -74,7 +81,7 @@ public class SearchService {
             AbstractEntity relatedEntity = entity.getRelatedEntities().get(i);
 
             rows.add(new String[]{
-                    String.format(RELATED_ENTITY_DESCRIPTION_FORMAT, entity.getEntityType().toString(), i + 1),
+                    String.format(RELATED_ENTITY_DESCRIPTION_FORMAT, relatedEntity.getEntityType().toString(), i + 1),
                     getRelatedDescription(relatedEntity)
             });
         });

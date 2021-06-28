@@ -14,6 +14,8 @@ public class TestFixtures {
             "\"age\": 24 }";
     public static final String JSON_STRING_2 = "{ \"name\": \"John\", \"person\": false, \"countries\": [\"New Zealand\", \"USA\"]," +
             "\"age\": 24 }";
+    public static final String JSON_STRING_BLANK_VALUE = "{ \"name\": \"\", \"person\": true, \"countries\": [\"New Zealand\", \"Australia\"]," +
+            "\"age\": 24 }";
     public static final List<String> ENTITY_KEYS = List.of("name", "person", "countries", "age");
     public static final List<String> ENTITY_1_VALUES = List.of("Oliver", "true", "[\"New Zealand\",\"Australia\"]", "24");
     public static final List<String> ENTITY_2_VALUES = List.of("John", "false", "[\"New Zealand\",\"USA\"]", "24");
@@ -43,7 +45,7 @@ public class TestFixtures {
     }
 
     public static SearchType createSearchType(EntityType entityType) {
-        return new SearchType(SEARCH_TYPE_NAME, createAbstractEntity(entityType, JSON_STRING));
+        return new SearchType(createAbstractEntity(entityType, JSON_STRING));
     }
 
     public static int sumStringLengths(String... strings) {

@@ -21,7 +21,6 @@ import static com.oreid.TestFixtures.*;
 import static com.oreid.domain.SearchConstants.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.*;
 
@@ -73,15 +72,15 @@ class SearchServiceTest {
     void test_addSearchType() {
         assertThat(testee.getSearchTypes(), is(Collections.emptyMap()));
 
-        testee.addSearchType(ENTITY_TYPE, SEARCH_TYPE);
+        testee.addSearchType(SEARCH_TYPE);
 
-        assertThat(testee.getSearchTypes(), hasEntry(ENTITY_TYPE, SEARCH_TYPE));
+        assertThat(testee.getSearchTypes(), hasEntry(ENTITY_TYPE.toString(), SEARCH_TYPE));
         assertThat(testee.getSearchTypes().size(), is(1));
     }
 
     @Test
     void test_isValidField_valid() {
-        testee.addSearchType(ENTITY_TYPE, SEARCH_TYPE);
+        testee.addSearchType(SEARCH_TYPE);
 
         final var result = testee.isValidField(ENTITY_TYPE, VALID_FIELD);
 
@@ -97,7 +96,7 @@ class SearchServiceTest {
 
     @Test
     void test_isValidField_invalid() {
-        testee.addSearchType(ENTITY_TYPE, SEARCH_TYPE);
+        testee.addSearchType(SEARCH_TYPE);
 
         final var result = testee.isValidField(ENTITY_TYPE, INVALID_FIELD);
 
@@ -185,4 +184,16 @@ class SearchServiceTest {
                 PRINT_SEPARATOR
         )));
     }
+
+    @Test
+    void test_printSearchResults_noResult() {
+        when(datastore.search(ENTITY_TYPE, KEY, VALUE)).thenReturn(Collections.emptyList());
+
+        testee.printSearchResults(ENTITY_TYPE, KEY, VALUE);
+
+        String output = outContent.toString();
+        assertThat(output.contains(NO_RESULTS), is(true));
+        assertThat(output.length(), is(sumStringLengths(NO_RESULTS)));
+    }
+
 }

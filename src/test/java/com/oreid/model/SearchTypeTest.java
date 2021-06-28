@@ -14,8 +14,8 @@ import static org.hamcrest.core.Is.is;
 @ExtendWith(MockitoExtension.class)
 class SearchTypeTest {
 
-    private static final String NAME = "Name";
-    private static final AbstractEntity ENTITY = createAbstractEntity(EntityType.ORGANIZATION, JSON_STRING);
+    private static final EntityType ENTITY_TYPE = EntityType.ORGANIZATION;
+    private static final AbstractEntity ENTITY = createAbstractEntity(ENTITY_TYPE, JSON_STRING);
     private static final String VALID_FIELD = ENTITY_KEYS.get(0);
     private static final String INVALID_FIELD = "InvalidField";
 
@@ -23,12 +23,12 @@ class SearchTypeTest {
 
     @BeforeEach
     void setUp() {
-        testee = new SearchType(NAME, ENTITY);
+        testee = new SearchType(ENTITY);
     }
 
     @Test
     void test_constructor_success() {
-        assertThat(testee.getName(), is(NAME));
+        assertThat(testee.getName(), is(ENTITY_TYPE.toString()));
         assertThat(testee.getFields(), hasSize(4));
         assertThat(testee.getFields(), is(ENTITY_KEYS));
     }
