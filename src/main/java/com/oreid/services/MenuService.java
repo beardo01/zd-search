@@ -30,7 +30,6 @@ public class MenuService {
 
     @VisibleForTesting
     void processMenuInput(String input) {
-
         switch(input) {
             case SEARCH_OPTION:
                 processSearchSelect();
