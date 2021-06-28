@@ -33,6 +33,6 @@ public abstract class AbstractEntity {
         this.relatedEntities.add(relatedEntity);
     }
 
-    abstract String getRelatedDescriptionKey();
+    public abstract String getRelatedDescriptionKey();
 
 }

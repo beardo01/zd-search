@@ -14,7 +14,7 @@ public class User extends AbstractEntity {
     }
 
     @Override
-    String getRelatedDescriptionKey() {
+    public String getRelatedDescriptionKey() {
         return RELATED_DESCRIPTION_KEY;
     }
 

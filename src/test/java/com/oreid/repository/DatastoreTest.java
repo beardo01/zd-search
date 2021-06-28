@@ -20,10 +20,9 @@ class DatastoreTest {
 
     private static final EntityType ENTITY_TYPE_1 = EntityType.ORGANIZATION;
     private static final EntityType ENTITY_TYPE_2 = EntityType.TICKET;
-    private final AbstractEntity ENTITY_1 = createAbstractEntity(ENTITY_TYPE_1, JSON_STRING);
-    private final AbstractEntity ENTITY_2 = createAbstractEntity(ENTITY_TYPE_1, JSON_STRING_2);
-    private final AbstractEntity ENTITY_3 = createAbstractEntity(ENTITY_TYPE_2, JSON_STRING);
-    private static final List<String> ENTITY_KEYS = List.of("name", "person", "countries", "age");
+    private static final AbstractEntity ENTITY_1 = createAbstractEntity(ENTITY_TYPE_1, JSON_STRING);
+    private static final AbstractEntity ENTITY_2 = createAbstractEntity(ENTITY_TYPE_1, JSON_STRING_2);
+    private static final AbstractEntity ENTITY_3 = createAbstractEntity(ENTITY_TYPE_2, JSON_STRING);
     private static final List<Object> ENTITY_VALUES_1 = List.of("Oliver", "true", "New Zealand", "Australia", "24");
     private static final List<Object> ENTITY_VALUES_2 = List.of("John", "false", "New Zealand", "USA", "24");
     private static final String SEARCH_KEY = "name";
