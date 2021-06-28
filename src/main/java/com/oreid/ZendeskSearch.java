@@ -45,17 +45,18 @@ public class ZendeskSearch {
         entities.getRight().forEach(zendeskSearch.searchService::addSearchType);
 
         // Print menu and accept input
-        zendeskSearch.menuService.printMenu();
-        zendeskSearch.menuService.processInput();
+        zendeskSearch.menuService.startProcessing();
     }
 
+    /**
+     * Loads JSON data and returns a pair containing all entities and search types.
+     * @return Pair containing all entities and search types.
+     */
     private Pair<List<AbstractEntity>, List<SearchType>> loadAndRetrieveEntities() {
-        Gson gson = new Gson();
-
         // Retrieve entities
-        List<Organization> organizations = retrieveJsonObjects(gson, ORGANIZATIONS_FILE_NAME, Organization::new);
-        Map<String, List<User>> userMap = retrieveIndexedEntities(gson, USERS_FILE_NAME, User::new);
-        Map<String, List<Ticket>> ticketMap = retrieveIndexedEntities(gson, TICKETS_FILE_NAME, Ticket::new);
+        List<Organization> organizations = retrieveJsonObjects(ORGANIZATIONS_FILE_NAME, Organization::new);
+        Map<String, List<User>> userMap = retrieveIndexedEntities(USERS_FILE_NAME, User::new);
+        Map<String, List<Ticket>> ticketMap = retrieveIndexedEntities(TICKETS_FILE_NAME, Ticket::new);
 
         // Add relatedEntities to organization
         organizations.forEach(org -> {
@@ -86,8 +87,16 @@ public class ZendeskSearch {
         return new ImmutablePair<>(allEntities, entityTypes);
     }
 
-    private <T extends AbstractEntity> Map<String, List<T>> retrieveIndexedEntities(Gson gson, String fileName, Function<JsonObject, T> entityMapper) {
-        return retrieveJsonObjects(gson, fileName, entityMapper).stream()
+    /**
+     * Loads JSON objects from supplied filename, maps them to AbstractEntity and collects them into map.
+     * @param fileName Name of file to load.
+     * @param entityMapper Function to map from JonObject to AbstractEntity.
+     * @param <T> Concrete implementation of AbstractEntity.
+     * @return Map of mapped AbstractEntities. Key is organization ID, value is list of matching entities.
+     */
+    private <T extends AbstractEntity> Map<String, List<T>> retrieveIndexedEntities(String fileName, Function<JsonObject, T> entityMapper) {
+        // Put AbstractEntity into Map in form { organization_id_1: [Entity_1, Entity_2], organization_id_2: [Entity_3] } etc
+        return retrieveJsonObjects(fileName, entityMapper).stream()
                 .collect(Collectors.toMap(
                         entity -> entity.getData().has(ORGANIZATION_ID_KEY) ? entity.getData().get(ORGANIZATION_ID_KEY).toString() : null,
                         entity -> new ArrayList<>(Collections.singleton(entity)),
@@ -98,7 +107,16 @@ public class ZendeskSearch {
                 ));
     }
 
-    private <T extends AbstractEntity> List<T> retrieveJsonObjects(Gson gson, String fileName, Function<JsonObject, T> entityMapper) {
+    /**
+     * Loads JSON objects from supplied filename and maps them to AbstractEntity.
+     * @param fileName Name of file to load.
+     * @param entityMapper Function to map from JonObject to AbstractEntity.
+     * @param <T> Concrete implementation of AbstractEntity.
+     * @return List of mapped AbstractEntities.
+     */
+    private <T extends AbstractEntity> List<T> retrieveJsonObjects(String fileName, Function<JsonObject, T> entityMapper) {
+        Gson gson = new Gson();
+
         ClassLoader classLoader = getClass().getClassLoader();
         try (InputStream inputStream = classLoader.getResourceAsStream(fileName)) {
             String jsonData = IOUtils.toString(Objects.requireNonNull(inputStream), String.valueOf(StandardCharsets.UTF_8));

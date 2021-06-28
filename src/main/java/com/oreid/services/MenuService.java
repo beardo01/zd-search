@@ -21,7 +21,8 @@ public class MenuService {
         System.out.print(MAIN_MENU);
     }
 
-    public void processInput() {
+    public void startProcessing() {
+        this.printMenu();
         while(true) {
             processMenuInput(scanner.nextLine());
         }
